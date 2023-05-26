@@ -1,100 +1,53 @@
+
+import Notiflix from 'notiflix';
 import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
 
-const loaderElement = document.querySelector('.loader');
-const errorElement = document.querySelector('.error');
-const breedSelectElement = document.querySelector('.breed-select');
-const catInfoContainerElement = document.querySelector('.cat-info-container');
-const catImageElement = document.querySelector('.cat-image');
-const catBreedElement = document.querySelector('.cat-breed');
-const catDescriptionElement = document.querySelector('.cat-description');
-const catTemperamentElement = document.querySelector('.cat-temperament');
+const refs = {
+  boxCat: document.querySelector('.cat-info'),
+  select: document.querySelector('.breed-select'),
+  loader: document.querySelector('.loader-span'),
+};
 
-// Helper function to show the loader element
-function showLoader() {
-  loaderElement.style.display = 'block';
-}
+refs.select.addEventListener('input', selectCat);
 
-// Helper function to hide the loader element
-function hideLoader() {
-  loaderElement.style.display = 'none';
-}
+fetchBreeds()
+  .then(r => {
+    const markupOptions = r
+      .map(cat => {
+        return `<option value="${cat.id}">${cat.name}</option>\n`;
+      })
+      .join('');
 
-// Helper function to show the error element
-function showError() {
-  errorElement.style.display = 'block';
-}
+    refs.select.insertAdjacentHTML('beforeend', markupOptions);
+  })
+  .catch(error => {
+    Notiflix.Notify.failure(`Error fetch API, ${error}`);
+  });
 
-// Helper function to hide the error element
-function hideError() {
-  errorElement.style.display = 'none';
-}
+function selectCat(e) {
+  refs.boxCat.innerHTML = '';
+  const loader = '<span class="loader"></span>';
 
-// Helper function to show the cat information
-function showCatInfo(cat) {
-  catImageElement.src = cat.url;
-  catBreedElement.textContent = cat.breeds[0].name;
-  catDescriptionElement.textContent = cat.breeds[0].description;
-  catTemperamentElement.textContent = `Temperament: ${cat.breeds[0].temperament}`;
+  refs.boxCat.insertAdjacentHTML('beforeend', loader);
 
-  catInfoContainerElement.style.display = 'block';
-}
+  const catId = e.target.value;
 
-// Helper function to hide the cat information
-function hideCatInfo() {
-  catInfoContainerElement.style.display = 'none';
-}
+  fetchCatByBreed(catId)
+    .then(cat => {
+      refs.boxCat.innerHTML = '';
 
-// Fetch and populate the breed select options
-function populateBreeds() {
-  showLoader();
+      const kitty = cat[0].breeds[0];
+      const markupCat = `
+              <img width="400" src="${cat[0].url}" alt="cat" />
+              <div class="description-cat">
+                <h1>${kitty.name}</h1>
+                <p>${kitty.description}</p>
+                <p><h2>Temperament:</h2>${kitty.temperament}</p>
+              </div>`;
 
-  fetchBreeds()
-    .then(breeds => {
-      breeds.forEach(breed => {
-        const option = document.createElement('option');
-        option.value = breed.id;
-        option.textContent = breed.name;
-        breedSelectElement.appendChild(option);
-      });
-
-      hideLoader();
-      breedSelectElement.style.display = 'block';
+      refs.boxCat.insertAdjacentHTML('beforeend', markupCat);
     })
     .catch(error => {
-      hideLoader();
-      showError();
-      console.error(error);
+      Notiflix.Notify.failure(`Error fetch API, ${error}`);
     });
 }
-
-// Fetch and display cat information based on the selected breed
-function fetchAndDisplayCatInfo(breedId) {
-  showLoader();
-  hideCatInfo();
-
-  fetchCatByBreed(breedId)
-    .then(cats => {
-      if (cats.length > 0) {
-        const cat = cats[0];
-        showCatInfo(cat);
-      } else {
-        throw new Error('No cat found for the selected breed.');
-      }
-
-      hideLoader();
-    })
-    .catch(error => {
-      hideLoader();
-      showError();
-      console.error(error);
-    });
-}
-
-// Event listener for breed select change
-breedSelectElement.addEventListener('change', event => {
-  const selectedBreedId = event.target.value;
-  fetchAndDisplayCatInfo(selectedBreedId);
-});
-
-// Initialize the app
-populateBreeds();
