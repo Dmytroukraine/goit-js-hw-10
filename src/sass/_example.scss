@@ -55,12 +55,43 @@ body {
     margin-right: auto;
     padding: 15px;
     background-color: aliceblue;
-    box-shadow: 15px 14px 43px -9px rgba(0, 0, 0, 0.75);
+    box-shadow: 20px 10px 20px -10px rgba(0, 0, 0, 0.95);
 }
 
 .cat-info img {
-  display: block;
-    max-width: 60%;
+  max-width: 60%;
+  // width: 500px;
+  // position: relative;
+  // top: 50%;
+  // // left: 100px;
+  // transform: translateY(-50%);
+  animation-name: Appearance;
+  animation-duration: 3s;
+  animation-timing-function: cubic-bezier(.1,-.6,.2,0);
+}
+
+@-webkit-keyframes Appearance {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@-o-keyframes Appearance {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@-moz-keyframes Appearance {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@keyframes Appearance {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.is-hidden {
+  display: none;
 }
 
 
