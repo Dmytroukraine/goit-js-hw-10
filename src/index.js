@@ -68,7 +68,7 @@ const catInfo = document.querySelector('.cat-info');
 breedSelect.addEventListener('change', onSelectChange)
 
 
-Notiflix.Loading.pulse('Loading data, please wait...');
+Notiflix.Loading.dots('Loading data, please wait...');
 
 fetchBreeds()
     .then(breeds => {
@@ -91,7 +91,7 @@ function breedSelectMarkup(breeds) {
 }
 
 function onSelectChange(e) {
-    Notiflix.Loading.pulse('Loading data, please wait...')
+    Notiflix.Loading.dots('Loading data, please wait...')
     const breedId = e.currentTarget.value;
     fetchCatByBreed(breedId)
         .then(cat => {
